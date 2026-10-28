@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 import uvicorn
 from db_config import get_session, create_table
+from routers import review_router
 
 
 
@@ -18,6 +19,10 @@ app = FastAPI(
     description="An theatre booking App.",
     lifespan=app_lifespan
 )
+
+
+app.add_api_route(review_router)
+
 
 
 if __name__ == "__main__":
