@@ -1,1 +1,1 @@
-from reviews import router as review_router
+from .reviews import router as review_router

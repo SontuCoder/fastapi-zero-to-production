@@ -11,6 +11,6 @@ def create_table():
 
 
 def get_session():
-    """Dependency yhat provides a datanbase seassion per request"""
+    """Dependency what provides a datanbase seassion per request"""
     with Session(engine) as seeion:
         yield seeion

@@ -4,8 +4,6 @@ import uvicorn
 from db_config import get_session, create_table
 from routers import review_router
 
-
-
 @asynccontextmanager
 async def app_lifespan(app:FastAPI):
     create_table()
@@ -13,17 +11,13 @@ async def app_lifespan(app:FastAPI):
     yield
     print("Shutting down the app")
 
-
 app = FastAPI(
     title="RangManch APP",
     description="An theatre booking App.",
     lifespan=app_lifespan
 )
 
-
-app.add_api_route(review_router)
-
-
+app.include_router(review_router)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True, port=8000, host="127.0.0.1")
