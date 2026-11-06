@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from db_config import Base
-from sqlalchemy import String, CheckConstraint, Index, Text, ForeignKey
+from sqlalchemy import String, CheckConstraint, Index, Text, ForeignKey, DateTime
 
 
 
@@ -13,10 +13,6 @@ class Customer(Base):
         CheckConstraint(
             "number ~ '^[0-9]{10}$'",
             name="number_match"
-        )
-    ),(
-        Index(
-            "idx_number", "number"
         )
     ))
 
@@ -36,10 +32,6 @@ class DeliveryBoy(Base):
             "number ~ '^[0-9]{10}$'",
             name="number_match"
         )
-    ),(
-        Index(
-            "idx_number", "number"
-        )
     ))
 
     id: Mapped[int] = mapped_column(primary_key=True, default=None)
@@ -49,9 +41,9 @@ class DeliveryBoy(Base):
 
 class Kitchen(Base):
     __tablename__ = "kitchen"
-    __table_args__ = ({
+    __table_args__ = {
         "comment": "Table for storing kitchen details."
-    })
+    }
 
     id: Mapped[int] = mapped_column(primary_key=True, default=None)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -60,14 +52,15 @@ class Kitchen(Base):
     dishes: Mapped[str] = mapped_column(Text,nullable=True)
 
 class Order(Base):
-    __tablename__ = "order"
+    __tablename__ = "orders"
     __table_args__ = ({
         "comment" : "Table for storing order details." 
     },(
-        CheckConstraint(
-            "status ~ '^PLACED|CONFIRMED|DELIVERD|PRE-PEARING|ORDERD|CANCELED$'",
-            name: "status_check
-    ))
+       CheckConstraint(
+            "status IN ('PLACED', 'CONFIRMED', 'PREPARING', "
+            "'READY', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED')",
+            name="ck_orders_status",
+        ))
 
     id: Mapped[int] = mapped_column(primary_key=True, default=None)
     customer_id: Mapped[int] = mapped_column(ForeignKey("customer.id"), nullable=False)
