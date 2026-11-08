@@ -1,20 +1,20 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from db_config import Base
-from sqlalchemy import String, CheckConstraint, Index, Text, ForeignKey, DateTime
+from sqlalchemy import String, CheckConstraint, Text, ForeignKey, DateTime
+from datetime import datetime
 
 
 
 class Customer(Base):
     __tablename__ = "customer"
 
-    __table_args__ = ({
-        "comment": "Table for storing user details."
-    },(
+    __table_args__ = (
         CheckConstraint(
             "number ~ '^[0-9]{10}$'",
             name="number_match"
-        )
-    ))
+        ),{
+        "comment": "Table for storing user details."
+    })
 
     id: Mapped[int] = mapped_column(primary_key=True, default=None)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -25,14 +25,15 @@ class Customer(Base):
 class DeliveryBoy(Base):
     __tablename__ = "delivery_boy"
 
-    __table_args__ = ({
-        "comment": "Table for storing delivery boy details."
-    },(
+    __table_args__ = (
         CheckConstraint(
             "number ~ '^[0-9]{10}$'",
             name="number_match"
-        )
-    ))
+        ),
+        {
+        "comment": "Table for storing delivery boy details."
+    }
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, default=None)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
@@ -53,14 +54,16 @@ class Kitchen(Base):
 
 class Order(Base):
     __tablename__ = "orders"
-    __table_args__ = ({
-        "comment" : "Table for storing order details." 
-    },(
-       CheckConstraint(
+    __table_args__ = (
+        CheckConstraint(
             "status IN ('PLACED', 'CONFIRMED', 'PREPARING', "
             "'READY', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED')",
             name="ck_orders_status",
-        ))
+        ),
+        {
+        "comment" : "Table for storing order details." 
+    }
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, default=None)
     customer_id: Mapped[int] = mapped_column(ForeignKey("customer.id"), nullable=False)

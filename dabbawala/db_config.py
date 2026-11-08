@@ -2,10 +2,6 @@ from dotenv import load_dotenv
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
-from model import (
-Order, Customer, DeliveryBoy, Kitchen
-)
-
 
 load_dotenv()
 
@@ -30,5 +26,4 @@ def get_db():
         session.close()
 
 def create_tables():
-    
-
+    Base.metadata.create_all(bind=engine)
