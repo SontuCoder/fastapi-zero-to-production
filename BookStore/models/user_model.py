@@ -4,18 +4,15 @@ from datetime import datetime, timezone
 from typing import Optional
 import re
 
-"""user Table thats has id(between 100-999, autogenerate), number(ph_number), 
-password(has 8 length, must have 1 Capital, Number, Special char, no space, no Slash), 
-Borrow books list(from books Table), Own books list(from books Table),  Created, Updated dateTime """
 
 class User(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str = Field(nullable=False)
     number: int = Field(nullable=False, unique=True, index=True)
     password: str = Field(nullable=False)
-    borrow_books: list["Book"] = Relationship(back_populates="id")
-    own_books: list["Book"] = Relationship(back_populates="owner")
-    craeted_on: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), nullable=False)
+    own_books: list["Book"] = Relationship(back_populates="owners", link_model=UserBook)
+    borrow_books: list["Book"] = Relationship(back_populates="borrowers", link_model=BorrowBook)
+    created_on: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), nullable=False)
     updated_on: datetime | None = Field(default=None, nullable=True)
 
 class UserCreate(SQLModel):
@@ -73,5 +70,7 @@ class UserCreate(SQLModel):
 
 
 from books_model import Book
+from user_book_model import UserBook
+from borrow_book_model import BorrowBook
 User.model_rebuild()
 
