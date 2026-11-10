@@ -1,7 +1,7 @@
 from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime, timezone
-from typing import Optional
 from enum import Enum
+from pydantic import field_validator
 
 
 class BookCategory(Enum):
@@ -12,17 +12,28 @@ class BookCategory(Enum):
 
 
 class Book(SQLModel, table=True):
-    
     id: int | None = Field(default=None, primary_key=True)
     name: str = Field(nullable=False, index=True)
-    edition: int = Field(nullable=False, default=0, ge=0)
     category: BookCategory = Field(nullable=False, default=BookCategory.Others)
-    owner_id: list[int] = Field(foreign_key="user.id")
-    owner: list["User"] = Relationship(back_populates="own_books")
-    borrowers: list[int] = Field(foreign_key="user.id")
+    owners: list["User"] = Relationship(back_populates="own_books", link_model=UserBook)
+    borrowers: list["User"] = Relationship(back_populates="borrow_books", link_model=BorrowBook)
     created_on: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), nullable=False)
     updated_on: datetime | None = Field(default=None, nullable=True)
 
+class BookCreate(SQLModel):
+    name: str
+    category: BookCategory = BookCategory.Others
+    owner_ids: list[int]
+    
+    @field_validator("name")
+    @classmethod
+    def check_name(cls, value: str):
+        value = value.strip()
+        if not value:
+            raise ValueError("Name should not be blank")
+        return value
 
 from user_model import User
+from user_book_model import UserBook
+from borrow_book_model import BorrowBook
 Book.model_rebuild()
