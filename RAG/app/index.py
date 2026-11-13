@@ -30,3 +30,6 @@ vector_store = QdrantVectorStore.from_documents(
     collection_name="First_RAG_Project",
     url="http://localhost:6333/"
 )
+
+
+print("Indexing Done!")
